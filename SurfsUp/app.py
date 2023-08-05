@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 from datetime import datetime
 
-#################################################
+########################################################################################
 # Database Setup
-#################################################
+########################################################################################
 
 # create an engine to connect to the database
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
@@ -28,21 +28,21 @@ Station = Base.classes.station
 # Create our session (link) from Python to the DB
 session = Session(engine)
 
-#################################################
+########################################################################################
 # Flask Setup
-#################################################
+########################################################################################
 
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-#################################################
+########################################################################################
 # Flask Routes
-#################################################
+########################################################################################
 
 @app.route("/")
 def welcome():
-    """List all available api routes."""
+    """List all the available routes"""
     return (
         f"Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
@@ -54,20 +54,21 @@ def welcome():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    """Convert the query results to a dictionary using date as the key and prcp as the value."""
-    # Query the last 12 months of precipitation data
-    last_12_months = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    """Convert the query results to a dictionary by using date as the key and prcp as the value and return a JSON list of stations from the datase"""
+    # Query for the past 12 months of precipitation data
+    past_12_months = dt.date(2017, 8, 23) - dt.timedelta(days=365)
     precipitation_data = session.query(Measurement.date, Measurement.prcp).\
-        filter(Measurement.date >= last_12_months).all()
+        filter(Measurement.date >= past_12_months).all()
 
-    # Convert the query results to a dictionary using date as the key and prcp as the value.
+    # Convert the query results to a dictionary by using date as the key and prcp as the value
     precipitation_dict = {date: prcp for date, prcp in precipitation_data}
 
+    # Return a JSON representation of the dictionary
     return jsonify(precipitation_dict)
 
 @app.route("/api/v1.0/stations")
 def stations():
-    """Return a JSON list of stations from the dataset."""
+    """Return a JSON list of stations from the dataset"""
     stations_data = session.query(Station.station, Station.name).all()
 
     # Convert the query results to a list of dictionaries
@@ -75,30 +76,32 @@ def stations():
     for station, name in stations_data:
         stations_list.append({'station': station, 'name': name})
 
+    # Return a JSON list of stations from the dataset
     return jsonify(stations_list)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    """Query the dates and temperature observations of the most-active station for the previous year of data."""
-    # Find the most active station
+    """Query the dates and temperature observations of the most-active station for the previous year of data"""
+    # Query the most active station
     most_active_station_result = session.query(Measurement.station, func.count(Measurement.station)).group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).first()
-    most_active_station = most_active_station_result[0] if most_active_station_result else None
-        
+    most_active_station = most_active_station_result[0] if most_active_station_result else None   
     session.query(Measurement.station, func.count(Measurement.station)).group_by(Measurement.station).order_by(func.count(Measurement.station).desc())
+
     # Query the last 12 months of temperature data for the most active station
-    last_12_months = dt.date(2017, 8, 23) - dt.timedelta(days=365)
-    tobs_data = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == most_active_station).filter(Measurement.date >= last_12_months).all()
+    past_12_months = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    tobs_data = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == most_active_station).filter(Measurement.date >= past_12_months).all()
 
     # Convert the query results to a list of dictionaries
     tobs_list = []
     for date, tobs in tobs_data:
         tobs_list.append({'date': date, 'tobs': tobs})
 
+    # Return a JSON list of temperature observations for the previous year
     return jsonify(tobs_list)
 
 @app.route("/api/v1.0/<start>")
 def temp_range_start(start):
-    """Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start date."""
+    """Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start date"""
     # Convert the start date string to a datetime object
     try:
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
@@ -114,11 +117,12 @@ def temp_range_start(start):
     for result in temp_data:
         temp_list.append({'min_temp': result[0], 'avg_temp': result[1], 'max_temp': result[2]})
 
+    # Return a JSON list
     return jsonify(temp_list)
 
 @app.route("/api/v1.0/<start>/<end>")
 def temp_range_start_end(start, end):
-    """Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start-end range."""
+    """Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start-end range"""
     # Convert the start and end date strings to datetime objects
     try:
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
@@ -135,6 +139,7 @@ def temp_range_start_end(start, end):
     for result in temp_data:
         temp_list.append({'min_temp': result[0], 'avg_temp': result[1], 'max_temp': result[2]})
 
+    # Return a JSON list
     return jsonify(temp_list)
 
 if __name__ == "__main__":
