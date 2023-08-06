@@ -1,4 +1,4 @@
-#sqlalchemy-challenge
+# sqlalchemy-challenge
 
 Congratulations! You've decided to treat yourself to a long holiday vacation in Honolulu, Hawaii. To help with your trip planning, you decide to do a climate analysis about the area. The following sections outline the steps that you need to take to accomplish this task. In this sqlalchemy challenge. I am tasked to analyse: 
 
@@ -22,7 +22,7 @@ Congratulations! You've decided to treat yourself to a long holiday vacation in 
   - Plot the results as a histogram.
 5. Close the database session.
 
-#Part 2: Design Your Climate App
+# Part 2: Design Your Climate App
 
 1. Create Flask routes: /, /api/v1.0/precipitation, /api/v1.0/stations, /api/v1.0/tobs, /api/v1.0/<start>, and /api/v1.0/<start>/<end>.
 2. Define route functions:
