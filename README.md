@@ -49,3 +49,4 @@ Congratulations on embarking on a journey to conduct a comprehensive climate ana
 
 3. **Return JSON Responses:**
    - Harness Flask's `jsonify` function to facilitate the conversion of data into valid JSON responses for each route.
+   Cheers to goyal6624 who the code I referred to. 
